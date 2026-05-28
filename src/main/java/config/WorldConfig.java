@@ -1,11 +1,13 @@
 package config;
 
+import net.server.ChannelNetworkConfig;
+
 public class WorldConfig {
     public int flag = 0;
     public String server_message = "Welcome!";
     public String event_message = "";
     public String why_am_i_recommended = "";
-    public int channels = 1;
+    public ChannelNetworkConfig[] channel_parts;
     public int exp_rate = 1;
     public int meso_rate = 1;
     public int drop_rate = 1;

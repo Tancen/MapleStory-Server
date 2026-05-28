@@ -26,6 +26,7 @@ package client.command.commands.gm6;
 import client.Character;
 import client.Client;
 import client.command.Command;
+import net.server.ChannelNetworkConfig;
 import net.server.Server;
 import tools.PacketCreator;
 
@@ -49,13 +50,13 @@ public class WarpWorldCommand extends Command {
         byte worldb = Byte.parseByte(params[0]);
         if (worldb <= (server.getWorldsSize() - 1)) {
             try {
-                String[] socket = server.getInetSocket(c, worldb, c.getChannel());
+                ChannelNetworkConfig channelNetworkConfig = server.getChannelNetworkConfig(worldb, c.getChannel());
                 c.getWorldServer().removePlayer(player);
                 player.getMap().removePlayer(player);//LOL FORGOT THIS ><
                 player.setSessionTransitionState();
                 player.setWorld(worldb);
                 player.saveCharToDB();//To set the new world :O (true because else 2 player instances are created, one in both worlds)
-                c.sendPacket(PacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));
+                c.sendPacket(PacketCreator.getChannelChange(InetAddress.getByName(channelNetworkConfig.getPublicIP()), channelNetworkConfig.getPublicPort()));
             } catch (UnknownHostException | NumberFormatException ex) {
                 ex.printStackTrace();
                 player.message("Unexpected error when changing worlds, are you sure the world you are trying to warp to has the same amount of channels?");

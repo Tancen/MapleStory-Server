@@ -29,6 +29,7 @@ import constants.id.ItemId;
 import constants.id.MapId;
 import net.AbstractPacketHandler;
 import net.packet.InPacket;
+import net.server.ChannelNetworkConfig;
 import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -182,8 +183,8 @@ public final class ChangeMapHandler extends AbstractPacketHandler {
             c.disconnect(false, false);
             return;
         }
-        String[] socket = Server.getInstance().getInetSocket(c, c.getWorld(), c.getChannel());
-        if (socket == null) {
+        ChannelNetworkConfig channelNetworkConfig = Server.getInstance().getChannelNetworkConfig(c.getWorld(), c.getChannel());
+        if (channelNetworkConfig == null) {
             c.enableCSActions();
             return;
         }
@@ -191,7 +192,7 @@ public final class ChangeMapHandler extends AbstractPacketHandler {
 
         chr.setSessionTransitionState();
         try {
-            c.sendPacket(PacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));
+            c.sendPacket(PacketCreator.getChannelChange(InetAddress.getByName(channelNetworkConfig.getPublicIP()), channelNetworkConfig.getPublicPort()));
         } catch (UnknownHostException ex) {
             ex.printStackTrace();
         }

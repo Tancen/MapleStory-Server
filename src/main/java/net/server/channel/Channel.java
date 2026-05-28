@@ -26,6 +26,7 @@ import config.YamlConfig;
 import constants.id.MapId;
 import net.netty.ChannelServer;
 import net.packet.Packet;
+import net.server.ChannelNetworkConfig;
 import net.server.PlayerStorage;
 import net.server.Server;
 import net.server.services.BaseService;
@@ -75,10 +76,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 public final class Channel {
     private static final Logger log = LoggerFactory.getLogger(Channel.class);
-    private static final int BASE_PORT = 7575;
 
-    private final int port;
-    private final String ip;
+    private final ChannelNetworkConfig networkConfig;
     private final int world;
     private final int channel;
 
@@ -122,21 +121,20 @@ public final class Channel {
     private final Lock merchRlock;
     private final Lock merchWlock;
 
-    public Channel(final int world, final int channel, long startTime) {
+    public Channel(final int world, final int channel, ChannelNetworkConfig networkConfig, long startTime) {
         this.world = world;
         this.channel = channel;
 
         this.ongoingStartTime = startTime + 10000;  // rude approach to a world's last channel boot time, placeholder for the 1st wedding reservation ever
         this.mapManager = new MapManager(null, world, channel);
-        this.port = BASE_PORT + (this.channel - 1) + (world * 100);
-        this.ip = YamlConfig.config.server.HOST + ":" + port;
+        this.networkConfig = networkConfig;
 
         ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock(true);
         this.merchRlock = rwLock.readLock();
         this.merchWlock = rwLock.writeLock();
 
         try {
-            this.channelServer = initServer(port, world, channel);
+            this.channelServer = initServer(this.networkConfig.getLocalPort(), world, channel);
             expedType.addAll(Arrays.asList(ExpeditionType.values()));
 
             if (Server.getInstance().isOnline()) {  // postpone event loading to improve boot time... thanks Riizade, daronhudson for noticing slow startup times
@@ -158,7 +156,7 @@ public final class Channel {
 
             services = new ServicesManager(ChannelServices.OVERALL);
 
-            log.info("Channel {}: Listening on port {}", getId(), port);
+            log.info("Channel {}: Listening on port {}", getId(), this.networkConfig.getLocalPort());
         } catch (Exception e) {
             log.warn("Error during channel initialization", e);
         }
@@ -297,8 +295,8 @@ public final class Channel {
         return channel;
     }
 
-    public String getIP() {
-        return ip;
+    public ChannelNetworkConfig getNetworkConfig() {
+        return this.networkConfig;
     }
 
     public Event getEvent() {

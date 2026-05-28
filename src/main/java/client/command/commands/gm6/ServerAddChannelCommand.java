@@ -26,6 +26,8 @@ package client.command.commands.gm6;
 import client.Character;
 import client.Client;
 import client.command.Command;
+import config.YamlConfig;
+import net.server.ChannelNetworkConfig;
 import net.server.Server;
 import server.ThreadManager;
 
@@ -39,14 +41,17 @@ public class ServerAddChannelCommand extends Command {
         final Character player = c.getPlayer();
 
         if (params.length < 1) {
-            player.dropMessage(5, "Syntax: @addchannel <worldid>");
+            player.dropMessage(5, "Syntax: @addchannel <worldid> <local-port> <public-port>");
             return;
         }
 
         final int worldid = Integer.parseInt(params[0]);
+        final int localPort = Integer.parseInt(params[1]);
+        final int publicPort = Integer.parseInt(params[1]);
 
         ThreadManager.getInstance().newTask(() -> {
-            int chid = Server.getInstance().addChannel(worldid);
+            int chid = Server.getInstance().addChannel(worldid, new ChannelNetworkConfig(YamlConfig.config.server.LOCALHOST, YamlConfig.config.server.LANHOST,
+                    localPort, publicPort));
             if (player.isLoggedinWorld()) {
                 if (chid >= 0) {
                     player.dropMessage(5, "NEW Channel " + chid + " successfully deployed on world " + worldid + ".");

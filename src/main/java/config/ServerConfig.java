@@ -43,11 +43,10 @@ public class ServerConfig {
     public int MAX_ACCOUNT_LOGIN_ATTEMPT;
     public int LOGIN_ATTEMPT_DURATION;
 
-    //Ip Configuration
-    public String HOST;
+    //Server Configuration
     public String LANHOST;
     public String LOCALHOST;
-    public boolean GMSERVER;
+    public int LOGIN_PORT;
 
     //Other configuration
     public boolean SHUTDOWNHOOK;

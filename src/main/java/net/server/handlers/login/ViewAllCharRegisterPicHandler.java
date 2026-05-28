@@ -3,6 +3,7 @@ package net.server.handlers.login;
 import client.Client;
 import net.AbstractPacketHandler;
 import net.packet.InPacket;
+import net.server.ChannelNetworkConfig;
 import net.server.Server;
 import net.server.coordinator.session.Hwid;
 import net.server.coordinator.session.SessionCoordinator;
@@ -80,8 +81,8 @@ public final class ViewAllCharRegisterPicHandler extends AbstractPacketHandler {
         String pic = p.readString();
         c.setPic(pic);
 
-        String[] socket = server.getInetSocket(c, c.getWorld(), channel);
-        if (socket == null) {
+        ChannelNetworkConfig channelNetworkConfig = server.getChannelNetworkConfig(c.getWorld(), channel);
+        if (channelNetworkConfig == null) {
             c.sendPacket(PacketCreator.getAfterLoginError(10));
             return;
         }
@@ -90,7 +91,7 @@ public final class ViewAllCharRegisterPicHandler extends AbstractPacketHandler {
         c.setCharacterOnSessionTransitionState(charId);
 
         try {
-            c.sendPacket(PacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), charId));
+            c.sendPacket(PacketCreator.getServerIP(InetAddress.getByName(channelNetworkConfig.getPublicIP()), channelNetworkConfig.getPublicPort(), charId));
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

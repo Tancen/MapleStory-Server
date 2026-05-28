@@ -35,6 +35,7 @@ import net.packet.InPacket;
 import net.packet.Packet;
 import net.packet.logging.LoggingUtil;
 import net.packet.logging.MonitoredChrLogger;
+import net.server.ChannelNetworkConfig;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.coordinator.login.LoginBypassCoordinator;
@@ -1491,8 +1492,8 @@ public class Client extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        String[] socket = Server.getInstance().getInetSocket(this, getWorld(), channel);
-        if (socket == null) {
+        ChannelNetworkConfig channelNetworkConfig = Server.getInstance().getChannelNetworkConfig(getWorld(), channel);
+        if (channelNetworkConfig == null) {
             sendPacket(PacketCreator.serverNotice(1, "Channel " + channel + " is currently disabled. Try another channel."));
             sendPacket(PacketCreator.enableActions());
             return;
@@ -1524,7 +1525,7 @@ public class Client extends ChannelInboundHandlerAdapter {
 
         player.setSessionTransitionState();
         try {
-            sendPacket(PacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));
+            sendPacket(PacketCreator.getChannelChange(InetAddress.getByName(channelNetworkConfig.getPublicIP()), channelNetworkConfig.getPublicPort()));
         } catch (IOException e) {
             e.printStackTrace();
         }

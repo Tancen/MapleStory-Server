@@ -125,7 +125,7 @@ public class Server {
     private static ChannelDependencies channelDependencies;
 
     private LoginServer loginServer;
-    private final List<Map<Integer, String>> channels = new LinkedList<>();
+    private final List<Map<Integer, ChannelNetworkConfig>> channels = new LinkedList<>();
     private final List<World> worlds = new ArrayList<>();
     private final Properties subnetInfo = new Properties();
     private final Map<Integer, Set<Integer>> accountChars = new HashMap<>();
@@ -309,32 +309,17 @@ public class Server {
         }
     }
 
-    private String getIP(int world, int channel) {
+    public ChannelNetworkConfig getChannelNetworkConfig(int world, int channel) {
         wldRLock.lock();
         try {
+            if (world < 0 || world >= channels.size())
+                return null;
+
             return channels.get(world).get(channel);
         } finally {
             wldRLock.unlock();
         }
     }
-
-    public String[] getInetSocket(Client client, int world, int channel) {
-        String remoteIp = client.getRemoteAddress();
-
-        String[] hostAddress = getIP(world, channel).split(":");
-        if (IpAddresses.isLocalAddress(remoteIp)) {
-            hostAddress[0] = YamlConfig.config.server.LOCALHOST;
-        } else if (IpAddresses.isLanAddress(remoteIp)) {
-            hostAddress[0] = YamlConfig.config.server.LANHOST;
-        }
-
-        try {
-            return hostAddress;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
 
     private void dumpData() {
         wldRLock.lock();
@@ -348,9 +333,9 @@ public class Server {
         }
     }
 
-    public int addChannel(int worldid) {
+    public int addChannel(int worldid, ChannelNetworkConfig networkConfig) {
         World world;
-        Map<Integer, String> channelInfo;
+        Map<Integer, ChannelNetworkConfig> channelMapping;
         int channelid;
 
         wldRLock.lock();
@@ -359,12 +344,12 @@ public class Server {
                 return -3;
             }
 
-            channelInfo = channels.get(worldid);
-            if (channelInfo == null) {
+            channelMapping = channels.get(worldid);
+            if (channelMapping == null) {
                 return -3;
             }
 
-            channelid = channelInfo.size();
+            channelid = channelMapping.size();
             if (channelid >= YamlConfig.config.server.CHANNEL_SIZE) {
                 return -2;
             }
@@ -375,13 +360,13 @@ public class Server {
             wldRLock.unlock();
         }
 
-        Channel channel = new Channel(worldid, channelid, getCurrentTime());
+        Channel channel = new Channel(worldid, channelid, networkConfig, getCurrentTime());
         channel.setServerMessage(YamlConfig.config.worlds.get(worldid).why_am_i_recommended);
 
         if (world.addChannel(channel)) {
             wldWLock.lock();
             try {
-                channelInfo.put(channelid, channel.getIP());
+                channelMapping.put(channelid, networkConfig);
             } finally {
                 wldWLock.unlock();
             }
@@ -444,14 +429,18 @@ public class Server {
                 event_message,
                 exprate, droprate, bossdroprate, mesorate, questrate, travelrate, fishingrate);
 
-        Map<Integer, String> channelInfo = new HashMap<>();
+        Map<Integer, ChannelNetworkConfig> channelInfo = new HashMap<>();
         long bootTime = getCurrentTime();
-        for (int j = 1; j <= YamlConfig.config.worlds.get(i).channels; j++) {
-            int channelid = j;
-            Channel channel = new Channel(i, channelid, bootTime);
+        for (int j = 0; j < YamlConfig.config.worlds.get(i).channel_parts.length; j++) {
+            int channelid = j + 1;
+            ChannelNetworkConfig networkConfig = YamlConfig.config.worlds.get(i).channel_parts[j];
+            networkConfig.setLocalIP(YamlConfig.config.server.LOCALHOST);
+            networkConfig.setPublicIP(YamlConfig.config.server.LANHOST);
+
+            Channel channel = new Channel(i, channelid, networkConfig, bootTime);
 
             world.addChannel(channel);
-            channelInfo.put(channelid, channel.getIP());
+            channelInfo.put(channelid, networkConfig);
         }
 
         boolean canDeploy;
@@ -497,7 +486,7 @@ public class Server {
             int channel = world.removeChannel();
             wldWLock.lock();
             try {
-                Map<Integer, String> m = channels.get(worldid);
+                Map<Integer, ChannelNetworkConfig> m = channels.get(worldid);
                 if (m != null) {
                     m.remove(channel);
                 }
@@ -933,9 +922,8 @@ public class Server {
             }
         }
 
-        loginServer = initLoginServer(8484);
-
-        log.info("Listening on port 8484");
+        loginServer = initLoginServer(YamlConfig.config.server.LOGIN_PORT);
+        log.info("Listening on port " + YamlConfig.config.server.LOGIN_PORT);
 
         online = true;
         Duration initDuration = Duration.between(beforeInit, Instant.now());
