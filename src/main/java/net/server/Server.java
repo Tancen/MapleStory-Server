@@ -43,7 +43,6 @@ import net.PacketProcessor;
 import net.netty.LoginServer;
 import net.packet.Packet;
 import net.server.channel.Channel;
-import net.server.coordinator.session.IpAddresses;
 import net.server.coordinator.session.SessionCoordinator;
 import net.server.guild.Alliance;
 import net.server.guild.Guild;
@@ -431,9 +430,9 @@ public class Server {
 
         Map<Integer, ChannelNetworkConfig> channelInfo = new HashMap<>();
         long bootTime = getCurrentTime();
-        for (int j = 0; j < YamlConfig.config.worlds.get(i).channel_parts.length; j++) {
+        for (int j = 0; j < YamlConfig.config.worlds.get(i).channels_parts.length; j++) {
             int channelid = j + 1;
-            ChannelNetworkConfig networkConfig = YamlConfig.config.worlds.get(i).channel_parts[j];
+            ChannelNetworkConfig networkConfig = YamlConfig.config.worlds.get(i).channels_parts[j];
             networkConfig.setLocalIP(YamlConfig.config.server.LOCALHOST);
             networkConfig.setPublicIP(YamlConfig.config.server.LANHOST);
 

@@ -7,7 +7,7 @@ worlds:
     server_message: Welcome to Scania!
     event_message: Scania!
     why_am_i_recommended: Welcome to Scania!
-    channel_parts:
+    channels_parts:
       - localPort: 8001
         publicPort: 15249
     exp_rate: 10

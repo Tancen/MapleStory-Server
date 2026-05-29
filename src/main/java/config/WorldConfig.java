@@ -7,7 +7,7 @@ public class WorldConfig {
     public String server_message = "Welcome!";
     public String event_message = "";
     public String why_am_i_recommended = "";
-    public ChannelNetworkConfig[] channel_parts;
+    public ChannelNetworkConfig[] channels_parts;
     public int exp_rate = 1;
     public int meso_rate = 1;
     public int drop_rate = 1;
