@@ -50,7 +50,7 @@ public class ServerAddChannelCommand extends Command {
         final int publicPort = Integer.parseInt(params[1]);
 
         ThreadManager.getInstance().newTask(() -> {
-            int chid = Server.getInstance().addChannel(worldid, new ChannelNetworkConfig(YamlConfig.config.server.LOCALHOST, YamlConfig.config.server.LANHOST,
+            int chid = Server.getInstance().addChannel(worldid, new ChannelNetworkConfig(YamlConfig.config.server.LOCAL_HOST, YamlConfig.config.server.PUBLIC_HOST,
                     localPort, publicPort));
             if (player.isLoggedinWorld()) {
                 if (chid >= 0) {

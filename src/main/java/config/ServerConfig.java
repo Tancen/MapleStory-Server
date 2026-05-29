@@ -44,8 +44,8 @@ public class ServerConfig {
     public int LOGIN_ATTEMPT_DURATION;
 
     //Server Configuration
-    public String LANHOST;
-    public String LOCALHOST;
+    public String PUBLIC_HOST;
+    public String LOCAL_HOST;
     public int LOGIN_PORT;
 
     //Other configuration

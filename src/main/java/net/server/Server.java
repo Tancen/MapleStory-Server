@@ -433,8 +433,8 @@ public class Server {
         for (int j = 0; j < YamlConfig.config.worlds.get(i).channels_parts.length; j++) {
             int channelid = j + 1;
             ChannelNetworkConfig networkConfig = YamlConfig.config.worlds.get(i).channels_parts[j];
-            networkConfig.setLocalIP(YamlConfig.config.server.LOCALHOST);
-            networkConfig.setPublicIP(YamlConfig.config.server.LANHOST);
+            networkConfig.setLocalIP(YamlConfig.config.server.LOCAL_HOST);
+            networkConfig.setPublicIP(YamlConfig.config.server.PUBLIC_HOST);
 
             Channel channel = new Channel(i, channelid, networkConfig, bootTime);
 

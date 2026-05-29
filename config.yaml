@@ -61,8 +61,8 @@ server:
     LOGIN_ATTEMPT_DURATION: 120         #Period in seconds the login attempt remains registered on the system.
 
     #Ip Configuration
-    LANHOST: 43.228.71.225              #LAN IPv4 address   public ip
-    LOCALHOST: 127.0.0.1                #Loopback IPv4 address  local ip
+    PUBLIC_HOST: 43.228.71.225
+    LOCAL_HOST: 127.0.0.1                
 
     #Other configuration
     SHUTDOWNHOOK: true
