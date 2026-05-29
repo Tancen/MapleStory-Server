@@ -40,14 +40,14 @@ public class ServerAddChannelCommand extends Command {
     public void execute(Client c, String[] params) {
         final Character player = c.getPlayer();
 
-        if (params.length < 1) {
+        if (params.length < 3) {
             player.dropMessage(5, "Syntax: @addchannel <worldid> <local-port> <public-port>");
             return;
         }
 
         final int worldid = Integer.parseInt(params[0]);
         final int localPort = Integer.parseInt(params[1]);
-        final int publicPort = Integer.parseInt(params[1]);
+        final int publicPort = Integer.parseInt(params[2]);
 
         ThreadManager.getInstance().newTask(() -> {
             int chid = Server.getInstance().addChannel(worldid, new ChannelNetworkConfig(YamlConfig.config.server.LOCAL_HOST, YamlConfig.config.server.PUBLIC_HOST,
