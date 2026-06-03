@@ -397,6 +397,7 @@ public class CommandsExecutor {
         addCommand("togglecoupon", 3, ToggleCouponCommand.class);
         addCommand("togglewhitechat", 3, ChatCommand.class);
         addCommand("fame", 3, FameCommand.class);
+        addCommand("givenxcredit", 3, GiveNxCreditCommand.class);
         addCommand("giveexp", 3, GiveExpCommand.class);
         addCommand("givenx", 3, GiveNxCommand.class);
         addCommand("givevp", 3, GiveVpCommand.class);

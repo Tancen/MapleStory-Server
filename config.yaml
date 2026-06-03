@@ -9,7 +9,7 @@ worlds:
     why_am_i_recommended: Welcome to Scania!
     channels_parts:
       - localPort: 8001
-        publicPort: 15249
+        publicPort: 8001
     exp_rate: 10
     meso_rate: 10
     drop_rate: 10
@@ -61,7 +61,7 @@ server:
     LOGIN_ATTEMPT_DURATION: 120         #Period in seconds the login attempt remains registered on the system.
 
     #Ip Configuration
-    PUBLIC_HOST: 43.228.71.225
+    PUBLIC_HOST: 127.0.0.1
     LOCAL_HOST: 127.0.0.1                
 
     #Other configuration
